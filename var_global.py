@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import PIL
 from PIL import Image
 import pygame
 
@@ -19,8 +20,9 @@ class Cenario():
 		self.limites = []
 		self.protagonista = protagonista
 		
-		img = Image.open(local)
-		self.width, self.height = img.size
+		self.img = Image.open(local)
+			
+		self.width, self.height = self.img.size
 	
 	def getLimites(self):
 		if self.pos_y > 0:

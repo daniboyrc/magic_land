@@ -11,8 +11,8 @@ pygame.display.set_caption('RPG game')
 clock = pygame.time.Clock()
 		
 prot = Protagonista('personagem.png', (400, 300))
-cen = Cenario('back.png', prot)
-cen.setPosicao('right')
+cen = Cenario('back/back7.png', prot, (10, 10))
+cen.setPosicao('center')
 limites = cen.getLimites()
 
 def desenhaCenario():
@@ -76,6 +76,6 @@ while True:
 	movimentaPersonagem(move)
 	
 	pygame.display.flip()
-	clock.tick(25)
+	clock.tick(27)
 
 
