@@ -10,9 +10,9 @@ screen = pygame.display.set_mode((Tela.width, Tela.height))
 pygame.display.set_caption('RPG game')
 clock = pygame.time.Clock()
 		
-prot = Protagonista('personagem.png', (400, 300))
-cen = Cenario('back/back7.png', prot, (10, 10))
-cen.setPosicao('center')
+prot = Protagonista('img/personagens/principal/person.png', (70, 200))
+cen = Cenario('img/cenarios/fase1/mapa.png', prot, (10, 10))
+cen.setPosicao('up')
 limites = cen.getLimites()
 
 def desenhaCenario():
@@ -20,6 +20,9 @@ def desenhaCenario():
 	prot.moveProtagonista(limites)
 	screen.blit(cen.carregaCenario(), (cen.pos_x, cen.pos_y))
 	screen.blit(prot.spriteSheet(), (prot.pos_x, prot.pos_y))
+	#for i in range(0, cen.height, 16):
+	#	for j in range(0, cen.width, 16):
+	#		pygame.draw.rect(screen, (0), [j, i, 16, 16], 1)
 
 def movimentaPersonagem(move):
 	if move == 1:
@@ -71,7 +74,14 @@ while True:
 				pygame.display.toggle_fullscreen()
 			
 		if event.type == pygame.KEYUP:
-			move = 0
+			if event.key == pygame.K_w and move == 1:
+				move = 0
+			if event.key == pygame.K_s and move == 2:
+				move = 0
+			if event.key == pygame.K_a and move == 3:
+				move = 0
+			if event.key == pygame.K_d and move == 4:
+				move = 0
 	
 	movimentaPersonagem(move)
 	
