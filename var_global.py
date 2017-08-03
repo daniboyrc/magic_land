@@ -89,6 +89,7 @@ class Cenario():
 class Protagonista(pygame.sprite.Sprite):
 	
 	def __init__(self, local, pos):
+		pygame.sprite.Sprite.__init__(self)
 		self.local = local
 		self.pos_x = pos[0]
 		self.pos_y = pos[1]
