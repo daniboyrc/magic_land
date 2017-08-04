@@ -102,7 +102,7 @@ class Protagonista(pygame.sprite.Sprite):
 		if self.pos[1] + self.mov[1] > limites[0] and self.pos[1] + self.mov[1] + 32 < limites[2]:
 			self.pos[1] += self.mov[1]
 		
-		self.rect = pygame.Rect(self.pos[0], self.pos[1], 32, 32)
+		self.rect = pygame.Rect(self.pos[0] + 5, self.pos[1] + 5, 25, 25)
 		self.mov[0] = 0
 		self.mov[1] = 0
 
