@@ -107,13 +107,12 @@ class Protagonista(pygame.sprite.Sprite):
 		self.mov[1] = 0
 
 class Colide():
-	def __init__(self, local):
-		self.local = local
+	def __init__(self):
 		self.colisao = []
 		self.npc = []
 		self.porta = []
 		
-		arq = open(local, 'r')
+		arq = open('img/cenarios/fase1/mapa.txt', 'r')
 		for i in arq:
 			i = i.split()
 			if i[2] == 'c':

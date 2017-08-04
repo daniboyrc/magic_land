@@ -1,49 +1,36 @@
-# coding: utf-8
+# coding: utf-8:
 
 import pygame
 from classes import *
-from utils import *
 
 pygame.init()
 
-screen = pygame.display.set_mode((Tela.width, Tela.height))
 pygame.display.set_caption('RPG game')
 clock = pygame.time.Clock()
-		
-prot = Protagonista('fases/fase1/personagens/prot.png', (70, 200))
-cen = Cenario('fases/fase1/cenarios/mapa.png', prot, (10, 10))
-cen.setPosicao('up')
-colid = Colide('fases/fase1/cenarios/mapa.txt')
 
-def detectaColisao(p_antx, p_anty, c_antx, c_anty):
-	for i in colid.colisao:
-		if prot.rect.colliderect(i.move(cen.pos[0], cen.pos[1])):
-			prot.mov[0] = prot.mov[1] = cen.mov[0] = cen.mov[1] = 0
-			prot.pos[0], prot.pos[1] = p_antx, p_anty
-			cen.pos[0], cen.pos[1] = c_antx, c_anty
-			
-def desenhaCenario():
-	p_antx, p_anty = prot.pos[0], prot.pos[1]
-	c_antx, c_anty = cen.pos[0], cen.pos[1]
+prot = Protagonista('img/personagens/principal/person.png', (70, 200))
+cen = Cenario('img/cenarios/fase1/mapa.png', prot, (10, 10))
+cen.setPosicao((0,0))
+
+screen = pygame.display.set_mode((cen.size[0], cen.size[1]))
+
+def getCor(tipo):
+	if tipo == 'c':
+		cor = (0, 255, 0)
+	elif tipo == 'e':
+		cor = (0, 0, 255)
+	elif tipo == 'f':
+		cor = (255, 0, 0)
+	return cor
 	
+def desenhaCenario():
 	cen.moveCenario()
 	prot.moveProtagonista(cen.limites)
-	
-	detectaColisao(p_antx, p_anty, c_antx, c_anty)
-	
 	screen.blit(pygame.image.load(cen.local), (cen.pos[0], cen.pos[1]))
 	screen.blit(prot.spriteSheet(), (prot.pos[0], prot.pos[1]))
+	for i in coordenadas:
+		pygame.draw.rect(screen, getCor(i[2]), [i[0] * 16 + cen.mov[0], i[1] * 16 + cen.mov[1], 16, 16])
 	
-	# ------------- visualização da colisão ---------------
-	#for i in colid.colisao:
-	#	pygame.draw.rect(screen, (0, 255, 0), i.move(cen.pos[0], cen.pos[1]), 1)
-	#for i in colid.npc:
-	#	pygame.draw.rect(screen, (255, 0, 0), i.move(cen.pos[0], cen.pos[1]), 1)
-	#for i in colid.porta:
-	#	pygame.draw.rect(screen, (0, 0, 255), i.move(cen.pos[0], cen.pos[1]), 1)
-
-	#pygame.draw.rect(screen, (0), prot.rect, 1)
-
 def movimentaPersonagem(move):
 	if move == 1:
 		cen.mov[1] += prot.velocidade
@@ -73,13 +60,44 @@ def movimentaPersonagem(move):
 		prot.sprite[1] = -64
 		prot.sprite[0] -= 32
 		if prot.sprite[0] < -96: prot.sprite[0] = 0
-	
+		
+tipo = 'c'
 move = 0
+coordenadas = []
+
+arq = open('mapa.txt', 'r')
+for i in arq:
+	i = i.split()
+	coordenadas.append([int(i[0]) / 16, int(i[1]) / 16, i[2]])
+arq.close()
+
+pos = [0, 0]
 while True:	
 	desenhaCenario()
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			pygame.quit()
+			confirm = raw_input('Deseja salvar? ')
+			if confirm == 's':
+				arq = open('mapa.txt', 'w')
+				for i in coordenadas:
+					arq.write(str(i[0] * 16) + ' ' + str(i[1] * 16) + ' ' + i[2] + '\n')
+				arq.close()
+				pygame.quit()
+			if confirm == 'n':
+				pygame.quit()
+		
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			pos[0], pos[1] = pygame.mouse.get_pos()
+			pos[0] = (pos[0] - cen.pos[0]) / 16
+			pos[1] = (pos[1] - cen.pos[1]) / 16
+			
+			var = True
+			for i in 'cef':
+				if [pos[0], pos[1], i] in coordenadas:
+					coordenadas.remove([pos[0], pos[1], i])
+					var = False
+			if var:
+				coordenadas.append([pos[0], pos[1], tipo])
 		
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_w:
@@ -90,6 +108,12 @@ while True:
 				move = 3
 			if event.key == pygame.K_d:
 				move = 4
+			if event.key == pygame.K_j:
+				tipo = 'c' # colidir
+			if event.key == pygame.K_k:
+				tipo = 'e' # entrar
+			if event.key == pygame.K_l:
+				tipo = 'f' # falar
 			if event.key == pygame.K_F10:
 				pygame.display.toggle_fullscreen()
 			
@@ -107,5 +131,3 @@ while True:
 	
 	pygame.display.flip()
 	clock.tick(27)
-
-
