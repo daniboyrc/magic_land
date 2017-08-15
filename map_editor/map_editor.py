@@ -8,8 +8,8 @@ pygame.init()
 pygame.display.set_caption('RPG game')
 clock = pygame.time.Clock()
 
-prot = Protagonista('img/personagens/principal/person.png', (70, 200))
-cen = Cenario('img/cenarios/fase1/mapa.png', prot, (10, 10))
+prot = Protagonista('../fases/fase1/personagens/prot.png', (70, 200))
+cen = Cenario('../fases/fase1/cenarios/mapa2.png', prot, (10, 10))
 cen.setPosicao((0,0))
 
 screen = pygame.display.set_mode((cen.size[0], cen.size[1]))

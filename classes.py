@@ -83,9 +83,11 @@ class Protagonista(pygame.sprite.Sprite):
 	def __init__(self, local, pos):
 		pygame.sprite.Sprite.__init__(self)
 		self.local = local
-		self.velocidade = 2
+		self.velocidade = 3
 		self.pos = [pos[0], pos[1]]
 		self.mov = [0, 0]
+		self.direcao = 0
+		self.acao = False
 		self.sprite = [0, 0]
 		self.rect = pygame.Rect(self.pos[0], self.pos[1], 32, 32)
 	
@@ -102,15 +104,35 @@ class Protagonista(pygame.sprite.Sprite):
 		if self.pos[1] + self.mov[1] > limites[0] and self.pos[1] + self.mov[1] + 32 < limites[2]:
 			self.pos[1] += self.mov[1]
 		
-		self.rect = pygame.Rect(self.pos[0] + 5, self.pos[1] + 5, 25, 25)
+		self.rect = pygame.Rect(self.pos[0] + 9, self.pos[1] + 5, 16, 25)
+
 		self.mov[0] = 0
 		self.mov[1] = 0
 
+class Npc(pygame.sprite.Sprite):
+	def __init__(self, coord, img, nome):
+		pygame.sprite.Sprite.__init__(self)
+		self.coord = coord
+		self.img = img
+		self.sprite = 0
+		self.nome = nome
+		self.rect = pygame.Rect(self.coord[0], self.coord[1], 40, 40)
+		# self.falas = []
+		# self.quest = []
+		
+	def spriteSheet(self):
+		sprite_sheet = pygame.image.load(self.img)
+		image = pygame.Surface([32, 32])
+		image.set_colorkey((0,0,0), pygame.RLEACCEL)
+		image.blit(sprite_sheet, (0, self.sprite))
+		
+		return image
+		
 class Colide():
 	def __init__(self, local):
 		self.local = local
 		self.colisao = []
-		self.npc = []
+		self.npc = None
 		self.porta = []
 		
 		arq = open(local, 'r')
@@ -118,9 +140,20 @@ class Colide():
 			i = i.split()
 			if i[2] == 'c':
 				self.colisao.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
-			if i[2] == 'f':
-				self.npc.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
+			#if i[2] == 'f':
+			#	self.npc.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
 			if i[2] == 'e':
 				self.porta.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
 		arq.close()
 		
+
+
+
+
+
+
+
+
+
+
+
