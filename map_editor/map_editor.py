@@ -29,7 +29,8 @@ def desenhaCenario():
 	screen.blit(pygame.image.load(cen.local), (cen.pos[0], cen.pos[1]))
 	screen.blit(prot.spriteSheet(), (prot.pos[0], prot.pos[1]))
 	for i in coordenadas:
-		pygame.draw.rect(screen, getCor(i[2]), [i[0] * 16 + cen.mov[0], i[1] * 16 + cen.mov[1], 16, 16])
+		rect = pygame.Rect(i[0] * 16 + cen.mov[0], i[1] * 16 + cen.mov[1], 16, 16)
+		pygame.draw.rect(screen, getCor(i[2]), rect.move(cen.pos[0], cen.pos[1]))
 	
 def movimentaPersonagem(move):
 	if move == 1:
@@ -76,8 +77,22 @@ while True:
 	desenhaCenario()
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
+			colisao = []
+			npc = []
+			porta = []
+			for i in coordenadas:
+				if i[2] == 'c':
+					colisao.append(i)
+				if i[2] == 'e':
+					porta.append(i)
+				if i[2] == 'f':
+					npc.append(i)
+			
+			juntando = []
+
 			confirm = raw_input('Deseja salvar? ')
-			if confirm == 's':
+							
+			if confirm == 's':					
 				arq = open('mapa.txt', 'w')
 				for i in coordenadas:
 					arq.write(str(i[0] * 16) + ' ' + str(i[1] * 16) + ' ' + i[2] + '\n')

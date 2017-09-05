@@ -11,7 +11,7 @@ class Tela:
 
 class Cenario():
 	
-	def __init__(self, local, protagonista, posicao = (0, 0)):
+	def __init__(self, local, posicao = (0, 0)):
 		self.local = local
 		self.pos = [posicao[0], posicao[1]]
 		self.mov = [0, 0]
@@ -19,25 +19,6 @@ class Cenario():
 		img = Image.open(local)
 		self.size = img.size
 		self.limites = []
-		
-		self.protagonista = protagonista
-		
-		if self.pos[1] > 0:
-			self.limites.append(self.pos[1])
-		else:
-			self.limites.append(0)
-		if self.size[0] >= Tela.width:
-			self.limites.append(Tela.width)
-		else:
-			self.limites.append(self.size[0] + self.pos[0])
-		if self.size[1] >= Tela.height:
-			self.limites.append(Tela.height)
-		else:
-			self.limites.append(self.size[1] + self.pos[1])
-		if self.pos[0] > 0:
-			self.limites.append(self.pos[0])
-		else:
-			self.limites.append(0)
 	
 	def setPosicao(self, local = '', pos = (0, 0)):
 		if local == 'up':
@@ -59,22 +40,33 @@ class Cenario():
 			self.pos[0] = pos[0]
 			self.pos[1] = pos[1]
 
+	def setLimites(self):
+		if self.pos[1] > 0:
+			self.limites.append(self.pos[1])
+		else:
+			self.limites.append(0)
+		if self.size[0] >= Tela.width:
+			self.limites.append(Tela.width)
+		else:
+			self.limites.append(self.size[0] + self.pos[0])
+		if self.size[1] >= Tela.height:
+			self.limites.append(Tela.height)
+		else:
+			self.limites.append(self.size[1] + self.pos[1])
+		if self.pos[0] > 0:
+			self.limites.append(self.pos[0])
+		else:
+			self.limites.append(0)
+	
 	def moveCenario(self):
 		if self.size[0] > Tela.width:
 			if Tela.width - self.size[0] < self.pos[0] + self.mov[0] < 0: 
 				self.pos[0] += self.mov[0]
-			else:
-				self.protagonista.mov[0] *= 2
-		else:
-			self.protagonista.mov[0] *= 2
+				
 		if self.size[1] > Tela.height:
 			if Tela.height - self.size[1] < self.pos[1] + self.mov[1] < 0:
 				self.pos[1] += self.mov[1]
-			else:
-				self.protagonista.mov[1] *= 2
-		else:
-				self.protagonista.mov[1] *= 2
-			
+
 		self.mov[0] = 0
 		self.mov[1] = 0
 
@@ -83,11 +75,10 @@ class Protagonista(pygame.sprite.Sprite):
 	def __init__(self, local, pos):
 		pygame.sprite.Sprite.__init__(self)
 		self.local = local
-		self.velocidade = 3
+		self.velocidade = 6
 		self.pos = [pos[0], pos[1]]
 		self.mov = [0, 0]
 		self.direcao = 0
-		self.acao = False
 		self.sprite = [0, 0]
 		self.rect = pygame.Rect(self.pos[0], self.pos[1], 32, 32)
 	
@@ -117,6 +108,7 @@ class Npc(pygame.sprite.Sprite):
 		self.sprite = 0
 		self.nome = nome
 		self.rect = pygame.Rect(self.coord[0], self.coord[1], 40, 40)
+		self.area_interacao = pygame.Rect(self.coord[0] - 10, self.coord[1] - 10, 60, 60)
 		# self.falas = []
 		# self.quest = []
 		
@@ -140,8 +132,6 @@ class Colide():
 			i = i.split()
 			if i[2] == 'c':
 				self.colisao.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
-			#if i[2] == 'f':
-			#	self.npc.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
 			if i[2] == 'e':
 				self.porta.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
 		arq.close()

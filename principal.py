@@ -7,12 +7,13 @@ from utils import *
 pygame.init()
 
 screen = pygame.display.set_mode((Tela.width, Tela.height))
-pygame.display.set_caption('RPG game')
-deb = pygame.time.Clock()
+pygame.display.set_caption('Magic Land')
+clock = pygame.time.Clock()
 		
-prot = Protagonista('fases/fase1/personagens/prot.png', (70, 200))
-cen = Cenario('fases/fase1/cenarios/mapa2.png', prot, (10, 10))
-cen.setPosicao('up')
+prot = Protagonista('fases/fase1/personagens/prot.png', (480, 450))
+cen = Cenario('fases/fase1/cenarios/mapa2.jpg')
+cen.setPosicao('center')
+cen.setLimites()
 colid = Colide('fases/fase1/cenarios/mapa.txt')
 
 # ------------- instanciando npcs ---------------
@@ -37,8 +38,11 @@ def detectaColisao(p_antx, p_anty, c_antx, c_anty):
 			prot.mov[0] = prot.mov[1] = cen.mov[0] = cen.mov[1] = 0
 			prot.pos[0], prot.pos[1] = p_antx, p_anty
 			cen.pos[0], cen.pos[1] = c_antx, c_anty		
-	
+			
 	for i in npc:
+		if not prot.rect.colliderect(i.area_interacao.move(cen.pos[0], cen.pos[1])):
+			i.sprite = 0
+				
 		if prot.rect.colliderect(i.rect.move(cen.pos[0] - 4, cen.pos[1] - 4)):
 			prot.mov[0] = prot.mov[1] = cen.mov[0] = cen.mov[1] = 0
 			prot.pos[0], prot.pos[1] = p_antx, p_anty
@@ -51,16 +55,13 @@ def detectaColisao(p_antx, p_anty, c_antx, c_anty):
 				i.sprite = -64
 			if prot.direcao == 4:
 				i.sprite = -32
-			
-			colid.npc = i
 
-	if prot.acao:
-		if colid.npc:
-			print 'oi, eu sou um ' + colid.npc.nome
-			colid.sprite = 0
-			colid.npc = False
-		prot.acao = False
+def acao():
+	for i in npc:
+		if prot.rect.colliderect(i.area_interacao.move(cen.pos[0], cen.pos[1])):
+			print 'oi, eu sou um ' + i.nome
 			
+		
 def desenhaCenario():
 	p_antx, p_anty = prot.pos[0], prot.pos[1]
 	c_antx, c_anty = cen.pos[0], cen.pos[1]
@@ -76,42 +77,53 @@ def desenhaCenario():
 		screen.blit(i.spriteSheet(), i.rect.move(cen.pos[0], cen.pos[1]))
 	
 	# ------------- visualização da colisão ---------------
-	#for i in colid.colisao:
-		#pygame.draw.rect(screen, (0, 255, 0), i.move(cen.pos[0], cen.pos[1]), 1)
-	##for i in colid.npc:
-	##	pygame.draw.rect(screen, (255, 0, 0), i.move(cen.pos[0], cen.pos[1]), 1)
-	#for i in colid.porta:
-		#pygame.draw.rect(screen, (0, 0, 255), i.move(cen.pos[0], cen.pos[1]), 1)
-	#for i in npc:
-		#pygame.draw.rect(screen, (255, 0, 0), i.rect.move(cen.pos[0] - 4, cen.pos[1] - 4), 1)
-	#pygame.draw.rect(screen, (0), prot.rect, 1)
+	for i in colid.colisao:
+		pygame.draw.rect(screen, (0, 255, 0), i.move(cen.pos[0], cen.pos[1]), 1)
+	for i in colid.porta:
+		pygame.draw.rect(screen, (0, 0, 255), i.move(cen.pos[0], cen.pos[1]), 1)
+	for i in npc:
+		pygame.draw.rect(screen, (255, 0, 0), i.rect.move(cen.pos[0] - 4, cen.pos[1] - 4), 1)
+	pygame.draw.rect(screen, (0), prot.rect, 1)
+	for i in npc:
+		pygame.draw.rect(screen, (255, 255, 0), i.area_interacao.move(cen.pos[0] - 4, cen.pos[1] - 4), 1)
 	
 def movimentaPersonagem(move):
 	if move == 1:
-		cen.mov[1] += prot.velocidade
-		prot.mov[1] -= prot.velocidade
-		
+		if Tela.height / 2 - prot.velocidade < prot.pos[1] < Tela.height / 2 + prot.velocidade and cen.pos[1] + cen.mov[1] + prot.velocidade < 0:
+			cen.mov[1] += prot.velocidade
+		else:
+			prot.mov[1] -= prot.velocidade
+			
 		prot.sprite[1] = -96
 		prot.sprite[0] -= 32
 		if prot.sprite[0] < -96: prot.sprite[0] = 0
-	elif move == 2:
-		cen.mov[1] -= prot.velocidade
-		prot.mov[1] += prot.velocidade
 		
+	elif move == 2:
+		if Tela.height / 2 - prot.velocidade < prot.pos[1] < Tela.height / 2 + prot.velocidade and Tela.height - cen.size[1] < cen.pos[1] + cen.mov[1] - prot.velocidade :
+			cen.mov[1] -= prot.velocidade
+		else:
+			prot.mov[1] += prot.velocidade
+			
 		prot.sprite[1] = 0
 		prot.sprite[0] -= 32
 		if prot.sprite[0] < -96: prot.sprite[0] = 0
-	elif move == 3:
-		cen.mov[0] += prot.velocidade
-		prot.mov[0] -= prot.velocidade
 		
+	elif move == 3:
+		if Tela.width / 2 - prot.velocidade < prot.pos[0] < Tela.width / 2 + prot.velocidade and cen.pos[0] + cen.mov[0] + prot.velocidade < 0:
+			cen.mov[0] += prot.velocidade
+		else:
+			prot.mov[0] -= prot.velocidade
+			
 		prot.sprite[1] = -32
 		prot.sprite[0] -= 32
 		if prot.sprite[0] < -96: prot.sprite[0] = 0
-	elif move == 4:
-		cen.mov[0] -= prot.velocidade
-		prot.mov[0] += prot.velocidade
 		
+	elif move == 4:
+		if Tela.width / 2 - prot.velocidade < prot.pos[0] < Tela.width / 2 + prot.velocidade and Tela.width - cen.size[0] < cen.pos[0] + cen.mov[0] - prot.velocidade:
+			cen.mov[0] -= prot.velocidade
+		else:
+			prot.mov[0] += prot.velocidade
+			
 		prot.sprite[1] = -64
 		prot.sprite[0] -= 32
 		if prot.sprite[0] < -96: prot.sprite[0] = 0
@@ -137,7 +149,7 @@ while True:
 				move = 4
 				prot.direcao = 4
 			if event.key == pygame.K_SPACE:
-				prot.acao = True
+				acao()
 			if event.key == pygame.K_F10:
 				pygame.display.toggle_fullscreen()
 			
@@ -154,6 +166,7 @@ while True:
 	movimentaPersonagem(move)
 	
 	pygame.display.flip()
-	deb.tick(27)
+	
+	clock.tick(27)
 
 

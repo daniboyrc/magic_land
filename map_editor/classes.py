@@ -83,7 +83,7 @@ class Protagonista(pygame.sprite.Sprite):
 	def __init__(self, local, pos):
 		pygame.sprite.Sprite.__init__(self)
 		self.local = local
-		self.velocidade = 2
+		self.velocidade = 10
 		self.pos = [pos[0], pos[1]]
 		self.mov = [0, 0]
 		self.sprite = [0, 0]
