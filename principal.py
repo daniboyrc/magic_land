@@ -31,7 +31,6 @@ def detectaColisao(p_antx, p_anty, c_antx, c_anty):
 			prot.mov[0] = prot.mov[1] = cen.mov[0] = cen.mov[1] = 0
 			prot.pos[0], prot.pos[1] = p_antx, p_anty
 			cen.pos[0], cen.pos[1] = c_antx, c_anty
-			continue
 	
 	for i in colid.colisao:
 		if prot.rect.colliderect(i.move(cen.pos[0], cen.pos[1])):
@@ -77,6 +76,15 @@ def desenhaCenario():
 		screen.blit(i.spriteSheet(), i.rect.move(cen.pos[0], cen.pos[1]))
 	
 	# ------------- visualização da colisão ---------------
+	for i in colid.colisao:
+		pygame.draw.rect(screen, (0, 255, 0), i.move(cen.pos[0], cen.pos[1]), 1)
+	for i in colid.porta:
+		pygame.draw.rect(screen, (0, 0, 255), i.move(cen.pos[0], cen.pos[1]), 1)
+	for i in npc:
+		pygame.draw.rect(screen, (255, 0, 0), i.rect.move(cen.pos[0] - 4, cen.pos[1] - 4), 1)
+	pygame.draw.rect(screen, (0), prot.rect, 1)
+	for i in npc:
+		pygame.draw.rect(screen, (255, 255, 0), i.area_interacao.move(cen.pos[0] - 4, cen.pos[1] - 4), 1)
 	
 def movimentaPersonagem(move):
 	if move == 1:
