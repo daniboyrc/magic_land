@@ -1,0 +1,14 @@
+Observações
+* criar função map_editor para apagar pasta
+
+Objetivo v(1.5):
+* dicionário ao invés de lista na classe Porta
+* colocar variável collision como atributo de Cenário
+* npc_list e door_list para cenário
+* Entrar nas portas
+
+v(1.4)
+* remover classe Collision -
+* Fazer arquivo .py só com funções
+* classe Door
+* map_editor

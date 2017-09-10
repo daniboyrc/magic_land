@@ -76,7 +76,7 @@ tipo = 'c'
 move = 0
 coordenadas = []
 
-arq = open('mapa.txt', 'r')
+arq = open('mapa2.txt', 'r')
 for i in arq:
     i = i.split()
     coordenadas.append([int(i[0]) / 16, int(i[1]) / 16, i[2]])

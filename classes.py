@@ -11,18 +11,21 @@ class Tela:
 
 
 class Cenario():
-    def __init__(self, img, posicao=(0, 0)):
+    def __init__(self, img):
         self.img = img
-        self.pos = [posicao[0], posicao[1]]
+        self.pos = [0, 0]
         self.mov = [0, 0]
 
         img = Image.open(img)
         self.size = img.size
         self.limites = []
+        self.collision = []
+        self.npc_list = []
+        self.door_list = []
 
     def setSize(self):
-        self.img = Image.open(self.img)
-        self.size = self.img.size
+        img = Image.open(self.img)
+        self.size = img.size
 
     def setImg(self, img):
         self.img = img
@@ -48,6 +51,7 @@ class Cenario():
             self.pos[1] = pos[1]
 
     def setLimites(self):
+        self.limites = []
         if self.pos[1] > 0:
             self.limites.append(self.pos[1])
         else:
@@ -65,14 +69,22 @@ class Cenario():
         else:
             self.limites.append(0)
 
-    def moveCenario(self):
-        if self.size[0] > Tela.width:
-            if Tela.width - self.size[0] < self.pos[0] + self.mov[0] < 0:
-                self.pos[0] += self.mov[0]
+    def setCollision(self):
+        self.collision = []
+        local = self.img.split()
+        word = local[-1][0:-3] + 'txt'
+        local.pop()
+        local.append(word)
+        local = '/'.join(local)
+        arq = open(local, 'r')
+        for i in arq:
+            i = i.split()
+            self.collision.append(pygame.Rect(int(i[0]), int(i[1]), 16, 16))
+        arq.close()
 
-        if self.size[1] > Tela.height:
-            if Tela.height - self.size[1] < self.pos[1] + self.mov[1] < 0:
-                self.pos[1] += self.mov[1]
+    def moveCenario(self):
+        self.pos[0] += self.mov[0]
+        self.pos[1] += self.mov[1]
 
         self.mov[0] = 0
         self.mov[1] = 0
@@ -82,7 +94,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, local, pos):
         pygame.sprite.Sprite.__init__(self)
         self.local = local
-        self.speed = 8
+        self.speed = 7
         self.pos = [pos[0], pos[1]]
         self.mov = [0, 0]
         self.sprite = [0, 0]
@@ -163,14 +175,21 @@ class Npc(pygame.sprite.Sprite):
 
 
 class Door():
-    def __init__(self, cenario, coord, size=32):
-        self.cenario = cenario
+    def __init__(self, coord, direcao, cenario, player, size=32):
         self.coord = coord
+        self.cenario = cenario
+        self.player = player
         self.size = size
         self.rect = pygame.Rect(self.coord[0], self.coord[1], self.size, 16)
-        self.area_interacao = pygame.Rect(
-            self.coord[0], self.coord[1] + 16, self.size, 12)
+        if direcao == 'down':
+            self.area_interacao = pygame.Rect(
+                self.coord[0], self.coord[1] + 16, self.size, 12)
+        elif direcao == 'up':
+            self.area_interacao = pygame.Rect(
+                self.coord[0], self.coord[1] - 12, self.size, 12)
 
+        def setCenario(cenario):
+            self.cenario = cenario
 
 class Quest():
     def __init__(self, nome, descricao, etapas, tipo):

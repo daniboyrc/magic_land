@@ -5,15 +5,18 @@ from utils import *
 from classes import *
 
 pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont("sans", 16)
 screen = pygame.display.set_mode((Tela.width, Tela.height))
 pygame.display.set_caption('Magic Land')
 clock = pygame.time.Clock()
 
-prot = Player('fases/fase1/personagens/prot.png', (480, 450))
+# Instanciando Player e Cenário
+prot = Player('fases/fase1/personagens/prot.png', (70, 220))
 cen = Cenario('fases/fase1/cenarios/mapa2.jpg')
-cen.setPosicao('down')
+cen.setPosicao((0, 0))
 cen.setLimites()
-collision = positionCollision('fases/fase1/cenarios/collision.txt')
+cen.setCollision()
 
 # Instanciando Quests
 key_quest = Quest('A chave',
@@ -25,16 +28,6 @@ sword_quest = Quest('A espada',
                     ['falar com o vendedor', 'falar com mago'],
                     1,)
 
-# Instanciando Portas
-door_player = Door('fases/fase1/cenarios/mapa.png', [304, 464])
-door_2 = Door('fases/fase1/cenarios/mapa.png', [480, 144])
-door_3 = Door('fases/fase1/cenarios/mapa.png', [32, 144])
-door_4 = Door('fases/fase1/cenarios/mapa.png', [240, 240])
-door_5 = Door('fases/fase1/cenarios/mapa.png', [704, 320])
-door_6 = Door('fases/fase1/cenarios/mapa.png', [496, 400])
-
-door_list = [door_player, door_2, door_3, door_4, door_5, door_6]
-
 # Instanciando NPCs
 mago = Npc(
     'fases/fase1/personagens/mago.png',
@@ -43,7 +36,7 @@ mago = Npc(
 cavaleiro = Npc(
     'fases/fase1/personagens/cavaleiro.png',
     'cavaleiro',
-    [500, 222],)
+    [288, 96],)
 porto = Npc(
     'fases/fase1/personagens/porto.png',
     'homem do porto',
@@ -57,7 +50,60 @@ vendedor = Npc(
     [key_quest, sword_quest],
     ['Estou em busca da chave', 'Preciso de uma espada'],)
 
-npc_list = [mago, cavaleiro, porto, vendedor]
+cen.npc_list = [mago, porto, vendedor]
+
+
+# Instanciando Portas
+
+
+d_cenario = Door([272, 416], 'up',
+                 {'img': 'fases/fase1/cenarios/mapa2.jpg',
+                     'pos': (0, 0),
+                     'npc_list': [mago, porto, vendedor],
+                     'door_list': [],
+                  }, [400, 270])
+d_player = Door([32, 144], 'down',
+                {'img': 'fases/fase1/cenarios/house_player.jpg',
+                    'pos': 'center',
+                    'npc_list': [cavaleiro],
+                    'door_list': [d_cenario],
+                 }, [400, 300])
+d_mago = Door([480, 144], 'down',
+              {'img': 'fases/fase1/cenarios/house_player.jpg',
+               'pos': 'center',
+               'npc_list': [cavaleiro],
+               'door_list': [d_cenario],
+               }, [400, 300])
+d_ferreiro = Door([304, 464], 'down',
+                  {'img': 'fases/fase1/cenarios/house_player.jpg',
+                   'pos': 'center',
+                   'npc_list': [cavaleiro],
+                   'door_list': [d_cenario],
+                   }, [400, 300])
+d_lord = Door([240, 240], 'down',
+              {'img': 'fases/fase1/cenarios/house_player.jpg',
+               'pos': 'center',
+               'npc_list': [cavaleiro],
+               'door_list': [d_cenario],
+               }, [400, 300])
+d_bibliotec = Door([704, 320], 'down',
+                   {'img': 'fases/fase1/cenarios/house_player.jpg',
+                    'pos': 'center',
+                    'npc_list': [cavaleiro],
+                    'door_list': [d_cenario],
+                    }, [400, 300])
+d_vendedor = Door([496, 400], 'down',
+                  {'img': 'fases/fase1/cenarios/house_player.jpg',
+                   'pos': 'center',
+                   'npc_list': [cavaleiro],
+                   'door_list': [d_cenario],
+                   }, [400, 300])
+
+
+d_cenario.cenario['door_list'] = [d_player, d_mago, d_lord, d_ferreiro,
+                                  d_bibliotec, d_vendedor]
+
+cen.door_list = d_cenario.cenario['door_list']
 
 # Dando quest ao protagonista
 prot.newQuest(key_quest)
@@ -66,8 +112,9 @@ prot.newQuest(sword_quest)
 
 move = 0
 while True:
-    movePlayer(screen, collision, npc_list, door_list, cen, prot)
-    visualizaColisao(screen, collision, door_list, npc_list, cen, prot)
+    movePlayer(screen, cen, prot)
+    dados(screen, font, clock)
+    visualizaColisao(screen, cen, prot)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -86,7 +133,7 @@ while True:
                 move = 4
                 prot.direcao = 4
             if event.key == pygame.K_SPACE:
-                acao(npc_list, door_list, cen, prot)
+                interection(screen, cen, prot)
             if event.key == pygame.K_F10:
                 pygame.display.toggle_fullscreen()
 
@@ -102,5 +149,5 @@ while True:
 
     movimentaPersonagem(move, cen, prot)
 
-    pygame.display.flip()
-    clock.tick(27)
+    pygame.display.update()
+    clock.tick(30)
