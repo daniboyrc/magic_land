@@ -1,21 +1,18 @@
 from PIL import Image
 import pygame
-from screen import *
+from constantes import *
 
 
 class Cenario():
-    def __init__(self, img):
+    def __init__(self, img, pos):
         self.img = img
-        self.pos = [0, 0]
+        self.pos = pos
         self.mov = [0, 0]
 
         img = Image.open(img)
         self.size = img.size
         self.limites = []
         self.collision = []
-        self.npc_list = []
-        self.door_list = []
-        self.cen_list = []
 
     def setSize(self):
         img = Image.open(self.img)

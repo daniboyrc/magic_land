@@ -3,80 +3,71 @@
 import pygame
 from classes import *
 
-pygame.init()
+CENARIO = '../resources/cenarios/cenario_1.3.jpg',
+MAPA = 'mapa.txt'
+SPEED = 60
 
-pygame.display.set_caption('RPG game')
+pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont("sans", 16)
+pygame.display.set_caption('Map Editor')
 clock = pygame.time.Clock()
 
-prot = Protagonista('../fases/fase1/personagens/prot.png', (70, 200))
-cen = Cenario('../fases/fase1/cenarios/mapa2.jpg', prot, (10, 10))
-cen.setPosicao((0, 0))
-
-screen = pygame.display.set_mode((cen.size[0], cen.size[1]))
+cen = Cenario(CENARIO[0], (0, 0))
+screen = pygame.display.set_mode((Tela.width, Tela.height))
 
 
 def getCor(tipo):
-    if tipo == 'c':
+    cor = ''
+    if tipo == 'collision':
         cor = (0, 255, 0)
-    elif tipo == 'e':
+    elif tipo == 'door':
         cor = (0, 0, 255)
-    elif tipo == 'f':
+    elif tipo == 'npc':
         cor = (255, 0, 0)
     return cor
 
 
+def collid():
+
+    if Cursor.rect.colliderect(cen.rect.move(cen.pos[0], cen.pos[1])):
+        screen.blit(cen.local, (cen.pos[0], cen.pos[1]))
+        pygame.draw.rect(screen, (255, 0, 0), Cursor.rect)
+        print cen.rect
+
+
 def desenhaCenario():
+    screen.fill(0)
     cen.moveCenario()
-    prot.moveProtagonista(cen.limites)
-    screen.blit(pygame.image.load(cen.local), (cen.pos[0], cen.pos[1]))
-    screen.blit(prot.spriteSheet(), (prot.pos[0], prot.pos[1]))
-    for i in coordenadas:
-        rect = pygame.Rect(i[0] * 16 + cen.mov[0], i[1]
-                           * 16 + cen.mov[1], 16, 16)
-        pygame.draw.rect(screen, getCor(
-            i[2]), rect.move(cen.pos[0], cen.pos[1]))
+    collid()
+
+    for i in range(0, 800, 32):
+        for j in range(0, 600, 32):
+            screen.blit(cen.local, (i, j))
+
+
+
+def dados():
+    text = font.render('FPS: %.2f' % clock.get_fps(), True, (22, 255, 0))
+    screen.blit(text, (0, 0))
 
 
 def movimentaPersonagem(move):
     if move == 1:
-        cen.mov[1] += prot.velocidade
-        prot.mov[1] -= prot.velocidade
-
-        prot.sprite[1] = -96
-        prot.sprite[0] -= 32
-        if prot.sprite[0] < -96:
-            prot.sprite[0] = 0
+        cen.mov[1] += SPEED
     elif move == 2:
-        cen.mov[1] -= prot.velocidade
-        prot.mov[1] += prot.velocidade
-
-        prot.sprite[1] = 0
-        prot.sprite[0] -= 32
-        if prot.sprite[0] < -96:
-            prot.sprite[0] = 0
+        cen.mov[1] -= SPEED
     elif move == 3:
-        cen.mov[0] += prot.velocidade
-        prot.mov[0] -= prot.velocidade
-
-        prot.sprite[1] = -32
-        prot.sprite[0] -= 32
-        if prot.sprite[0] < -96:
-            prot.sprite[0] = 0
+        cen.mov[0] += SPEED
     elif move == 4:
-        cen.mov[0] -= prot.velocidade
-        prot.mov[0] += prot.velocidade
-
-        prot.sprite[1] = -64
-        prot.sprite[0] -= 32
-        if prot.sprite[0] < -96:
-            prot.sprite[0] = 0
+        cen.mov[0] -= SPEED
 
 
-tipo = 'c'
+tipo = 'collision'
 move = 0
 coordenadas = []
 
-arq = open('mapa2.txt', 'r')
+arq = open(MAPA, 'r')
 for i in arq:
     i = i.split()
     coordenadas.append([int(i[0]) / 16, int(i[1]) / 16, i[2]])
@@ -85,18 +76,22 @@ arq.close()
 pos = [0, 0]
 while True:
     desenhaCenario()
+    dados()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            pygame.quit()
+
             colisao = []
             personagem = []
             porta = []
-            arq = open('mapa.txt', 'w')
+            arq = open(MAPA, 'w')
             for i in coordenadas:
-                if i[2] == 'c':
+                if i[2] == 'collision':
                     colisao.append(i)
-                if i[2] == 'e':
+                if i[2] == 'door':
                     porta.append(i)
-                if i[2] == 'f':
+                if i[2] == 'npc':
                     personagem.append(i)
 
                 arq.write(str(i[0] * 16) + ' ' +
@@ -131,7 +126,7 @@ while True:
             pos[1] = (pos[1] - cen.pos[1]) / 16
 
             var = True
-            for i in 'cef':
+            for i in ['collision', 'npc', 'door']:
                 if [pos[0], pos[1], i] in coordenadas:
                     coordenadas.remove([pos[0], pos[1], i])
                     var = False
@@ -148,13 +143,13 @@ while True:
             if event.key == pygame.K_d:
                 move = 4
             if event.key == pygame.K_j:
-                tipo = 'c'  # colidir
+                tipo = 'collision'
             if event.key == pygame.K_k:
-                tipo = 'e'  # entrar
+                tipo = 'door'
             if event.key == pygame.K_l:
-                tipo = 'f'  # falar
-            if event.key == pygame.K_F10:
-                pygame.display.toggle_fullscreen()
+                tipo = 'npc'
+            if event.key == pygame.K_SPACE:
+                print move
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w and move == 1:
