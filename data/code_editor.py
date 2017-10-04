@@ -44,7 +44,6 @@ SURF_BG = 'resources/miscelania/bg_code_editor.png'
 # SURFACES
 text_bg = pygame.image.load(TEXT_BG)
 
-
 def code_editor(screen, id_feitico):
     global FPSCLOCK
 
@@ -68,6 +67,7 @@ def code_editor(screen, id_feitico):
     mouseX       = 0
     mouseY       = 0
     path         = 'resources/feiticos/'
+    ctrlPress    = False
 
     # SURFACES
     screen.blit(pygame.image.load(SURF_BG), (0, 0))
@@ -92,19 +92,19 @@ def code_editor(screen, id_feitico):
 # necessary.
 
     while True:
-
         camerax, cameray = adjustCamera(mainList, lineNumber, insertPoint, cursorRect, mainFont, camerax, cameray, windowWidth, windowHeight)
 
-        newChar, typeChar, deleteKey, returnKey, directionKey, windowWidth, windowHeight, mouseX, mouseY, mouseClicked = getInput(windowWidth, windowHeight)
+        newChar, typeChar, deleteKey, returnKey, directionKey, windowWidth, windowHeight, mouseX, mouseY, mouseClicked, ctrlPress = getInput(windowWidth, windowHeight, ctrlPress)
 
-        if newChar == 'escape':
-            exit = saveAndLoadScreen(mainList, windowWidth, windowHeight, displaySurf, mainFont, path, id_feitico)
-            newChar = False
-            insertPoint = 0
-            lineNumber = 0
-
-            if exit:
-                break
+        if newChar == 'exit':
+            break
+        if newChar == 'save':
+            saveToDisk(mainList, path)
+        if newChar == 'save_exit':
+            saveToDisk(mainList, path)
+            break
+        if newChar == 'test':
+            control_feitico.verifica_feitico(id_feitico)
 
         mainList, lineNumber, insertPoint, cursorRect = displayText(mainFont, newChar, typeChar, mainList, deleteKey, returnKey, lineNumber, insertPoint, directionKey, camerax, cameray, cursorRect, windowWidth, windowHeight, displaySurf, mouseClicked, mouseX, mouseY, screen)
 
@@ -338,7 +338,7 @@ def drawCursor(mainFont, cursorRect, displaySurf):
     pygame.draw.rect(displaySurf, (0), cursorRect)
 
 
-def getInput(windowWidth, windowHeight):
+def getInput(windowWidth, windowHeight, ctrlPress):
     newChar = False
     typeChar = False
     deleteKey = False
@@ -356,8 +356,8 @@ def getInput(windowWidth, windowHeight):
         elif event.type == KEYDOWN:
             if event.key == K_BACKSPACE:
                 deleteKey = True
-            elif event.key == K_ESCAPE:
-                newChar = 'escape'
+            elif event.key == K_LCTRL or event.key == K_RCTRL:
+                ctrlPress = True
             elif event.key == K_RETURN:
                 returnKey = True
             elif event.key == K_TAB:
@@ -371,9 +371,23 @@ def getInput(windowWidth, windowHeight):
                 directionKey = UP
             elif event.key == K_DOWN:
                 directionKey = DOWN
+
+            # COMMANDS
+            elif event.key == K_w and ctrlPress:
+                newChar = 'exit'
+            elif event.key == K_s and ctrlPress:
+                newChar = 'save'
+            elif event.key == K_d and ctrlPress:
+                newChar = 'save_exit'
+            elif event.key == K_f and ctrlPress:
+                newChar = 'test'
             else:
                 newChar = event.unicode
                 typeChar = True
+
+        elif event.type == KEYUP:
+            if event.key == K_LCTRL:
+                ctrlPress = False
 
         elif event.type == VIDEORESIZE:
             displaySurf = pygame.display.set_mode(event.dict['size'], RESIZABLE)
@@ -387,7 +401,7 @@ def getInput(windowWidth, windowHeight):
             mouseX, mouseY = event.pos
             mouseClicked = True
 
-    return newChar, typeChar, deleteKey, returnKey, directionKey, windowWidth, windowHeight, mouseX, mouseY, mouseClicked
+    return newChar, typeChar, deleteKey, returnKey, directionKey, windowWidth, windowHeight, mouseX, mouseY, mouseClicked, ctrlPress
 
 
 # These functions involve the string the cursor happens to be on.
@@ -536,30 +550,3 @@ def loadFromDisk(loadDirectory):
         i += 1
 
     return mainList
-
-
-def saveAndLoadInput(id_feitico):
-    saveFile = False
-    continueTyping = False
-    exit = False
-
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == KEYDOWN:
-            if event.key == K_a:
-                continueTyping = True
-                exit = True
-            elif event.key == K_s:
-                saveFile = True
-            elif event.key == K_d:
-                saveFile = True
-                exit = True
-            elif event.key == K_r:
-                continueTyping = True
-            elif event.key == K_f:
-                control_feitico.verifica_feitico(id_feitico)
-                continueTyping = True
-
-    return saveFile, continueTyping, exit

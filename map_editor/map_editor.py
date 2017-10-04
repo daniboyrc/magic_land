@@ -3,7 +3,7 @@
 import pygame
 from classes import *
 
-CENARIO = '../resources/cenarios/cenario_1.3.jpg',
+CENARIO = '../resources/cenarios/cenario_1.png'
 MAPA = 'mapa.txt'
 SPEED = 60
 
@@ -13,7 +13,7 @@ font = pygame.font.SysFont("sans", 16)
 pygame.display.set_caption('Map Editor')
 clock = pygame.time.Clock()
 
-cen = Cenario(CENARIO[0], (0, 0))
+cen = Cenario(CENARIO, (0, 0))
 screen = pygame.display.set_mode((Tela.width, Tela.height))
 
 
@@ -28,23 +28,15 @@ def getCor(tipo):
     return cor
 
 
-def collid():
-
-    if Cursor.rect.colliderect(cen.rect.move(cen.pos[0], cen.pos[1])):
-        screen.blit(cen.local, (cen.pos[0], cen.pos[1]))
-        pygame.draw.rect(screen, (255, 0, 0), Cursor.rect)
-        print cen.rect
-
-
 def desenhaCenario():
     screen.fill(0)
     cen.moveCenario()
-    collid()
-
-    for i in range(0, 800, 32):
-        for j in range(0, 600, 32):
-            screen.blit(cen.local, (i, j))
-
+    screen.blit(pygame.image.load(CENARIO), (cen.pos[0], cen.pos[1]))
+    for i in coordenadas:
+        rect = pygame.Rect(i[0] * 16 + cen.mov[0], i[1]
+                           * 16 + cen.mov[1], 16, 16)
+        pygame.draw.rect(screen, getCor(
+            i[2]), rect.move(cen.pos[0], cen.pos[1]))
 
 
 def dados():
@@ -70,6 +62,7 @@ coordenadas = []
 arq = open(MAPA, 'r')
 for i in arq:
     i = i.split()
+    print i
     coordenadas.append([int(i[0]) / 16, int(i[1]) / 16, i[2]])
 arq.close()
 

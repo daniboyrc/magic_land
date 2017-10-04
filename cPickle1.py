@@ -16,7 +16,7 @@ cenario.setCollision()
 mago = Npc(
     'Mago',
     'resources/personagens/mago.png',
-    [64, 256],)
+    [160, 112],)
 cavaleiro = Npc(
     'Cavaleiro',
     'resources/personagens/cavaleiro.png',
@@ -28,7 +28,7 @@ porto = Npc(
 vendedor = Npc(
     'vendedor',
     'resources/personagens/vendedor.png',
-    [736, 48],)
+    [480, 96],)
 
 
 # Instanciando portas
@@ -37,47 +37,22 @@ d_cenario = Door([272, 416], 'up',
                      'pos': (0, 0),
                      'npc_list': [mago, porto, vendedor],
                      'door_list': [],
-                  }, [400, 270])
-d_player = Door([32, 144], 'down',
+                  }, [370, 200])
+d_player = Door([496, 480], 'down',
                 {'img': 'resources/cenarios/house_player.jpg',
                     'pos': 'center',
                     'npc_list': [cavaleiro],
                     'door_list': [d_cenario],
                  }, [400, 300], False)
-d_mago = Door([480, 144], 'down',
+d_mago = Door([288, 144], 'down',
               {'img': 'resources/cenarios/house_player.jpg',
                'pos': 'center',
                'npc_list': [cavaleiro],
                'door_list': [d_cenario],
                }, [400, 300])
-d_ferreiro = Door([304, 464], 'down',
-                  {'img': 'resources/cenarios/house_player.jpg',
-                   'pos': 'center',
-                   'npc_list': [cavaleiro],
-                   'door_list': [d_cenario],
-                   }, [400, 300])
-d_lord = Door([240, 240], 'down',
-              {'img': 'resources/cenarios/house_player.jpg',
-               'pos': 'center',
-               'npc_list': [cavaleiro],
-               'door_list': [d_cenario],
-               }, [400, 300])
-d_bibliotec = Door([704, 320], 'down',
-                   {'img': 'resources/cenarios/house_player.jpg',
-                    'pos': 'center',
-                    'npc_list': [cavaleiro],
-                    'door_list': [d_cenario],
-                    }, [400, 300])
-d_vendedor = Door([496, 400], 'down',
-                  {'img': 'resources/cenarios/house_player.jpg',
-                   'pos': 'center',
-                   'npc_list': [cavaleiro],
-                   'door_list': [d_cenario],
-                   }, [400, 300])
 
 
-d_cenario.cenario['door_list'] = [d_player, d_mago, d_lord, d_ferreiro,
-                                  d_bibliotec, d_vendedor]
+d_cenario.cenario['door_list'] = [d_player, d_mago]
 
 # Instanciando Itens
 feitico = controllFeitico(player)
@@ -99,13 +74,13 @@ key_quest = Quest('A chave',
                   [None, mago_feitico, None, manual],
                   True)
 
-key_quest.setDialogo([['0/Estou em busca de uma chave',
-                       '1/Va ao bibliotecario e entregue essa carta',
-                       '0/Farei isso'],
-                      ['0/O mago mandou entregar essa carta',
-                       '0/Preciso de uma manual de uma chave',
-                       '1/Tenho o que procura, vou ver se encontro',
-                       '1/Aqui está'],
+key_quest.setDialogo([['0/Seleciona missao 1',
+                       '1/Dialogo 1',
+                       '0/Dialogo 2'],
+                      ['0/Proxima etapa',
+                       '0/Dialogo 1',
+                       '1/Dialogo 2',
+                       '1/Dialogo 3'],
                       ['0/Consegui o manual',
                        '1/Muito bem, agora va ao ferreiro',
                        '1/Peca para forjar sua chave'],
@@ -126,16 +101,14 @@ vendedor.setQuest([key_quest],
 
 # Diálogo aleatório dos NPCs
 npc = [mago, cavaleiro, porto, vendedor]
-frases = ['Hello my friend', 'Quer pipoca, jubileu?', 'Imposto eh roubo!']
+frases = ['Dialogo aleatorio 1', 'Dialogo aleatorio 2', 'Dialogo aleatorio 3']
 for i in npc:
     i.setFrase(frases)
 
 
 npc_atual = [mago, vendedor]
-door = [d_cenario, d_player, d_mago, d_ferreiro,
-        d_lord, d_bibliotec, d_vendedor]
-door_atual = [d_player, d_mago, d_lord, d_ferreiro,
-              d_bibliotec, d_vendedor]
+door = [d_cenario, d_player, d_mago]
+door_atual = [d_player, d_mago]
 quests = [key_quest]
 
 fase1 = Fase(

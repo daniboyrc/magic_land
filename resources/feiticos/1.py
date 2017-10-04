@@ -12,4 +12,3 @@ print '%.2f' % campo1
 print '%.2f' % campo2
 print '%.2f' % campo3
 print '%.2f' % media
-
