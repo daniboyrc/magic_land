@@ -1,5 +1,6 @@
 from PIL import Image
 import pygame
+import os
 from constantes import *
 
 
@@ -9,14 +10,12 @@ class Cenario():
         self.pos = pos
         self.mov = [0, 0]
 
-        img = Image.open(img)
-        self.size = img.size
+        self.size = pygame.image.load(self.img).get_size()
         self.limites = []
         self.collision = []
 
     def setSize(self):
-        img = Image.open(self.img)
-        self.size = img.size
+        self.size = pygame.image.load(self.img).get_size()
 
     def setImg(self, img):
         self.img = img
