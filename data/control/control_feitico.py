@@ -141,15 +141,3 @@ def verifica_feitico(id_feitico):
     arq = open(test, 'w')
     arq.write('')
     arq.close()
-
-def getFeitico(player):
-    id_feitico = []
-    feiticos = []
-    descricao = []
-    for i in player.inventario:
-        if str(i) == 'feitico':
-            id_feitico.append(i.id)
-            feiticos.append(i.nome)
-            descricao.append(i.descricao)
-
-    return id_feitico, feiticos, descricao

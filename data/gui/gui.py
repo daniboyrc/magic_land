@@ -2,84 +2,71 @@
 
 import pygame
 
-TRANSPARENCIA = [0, 255, 228]
+TRANSPARENCY_COLOR = [0, 255, 228]
 
 
 class GUI():
-    def __init__(self, screen, font, clock, pos, size):
+    def __init__(self, screen, clock, font, main_coordinate, main_size):
         self.screen = screen
-        self.font = font
         self.clock = clock
-        self.pos = pos
-        self.surf_main = pygame.Surface(size)
-        self.tranparencia(self.surf_main)
-        self.surface = {}
+        self.font = font
+        self.main_coordinate = main_coordinate
+        self.main_surface = pygame.Surface(main_size)
+        self.surfaces = {}
+        self._transparency(self.main_surface)
 
-    def tranparencia(self, surf):
-        surf.fill(TRANSPARENCIA)
-        surf.set_colorkey(TRANSPARENCIA, pygame.RLEACCEL)
+    def _transparency(self, surf):
+        surf.fill(TRANSPARENCY_COLOR)
+        surf.set_colorkey(TRANSPARENCY_COLOR, pygame.RLEACCEL)
 
-    def drawScreen(self):
-        self.screen.blit(self.surf_main, self.pos)
+    def _generate_img_surface(self, img_path):
+        img_surf = pygame.image.load(img_path)
+        surface = pygame.Surface(img_surf.get_size())
+        surface.set_colorkey([0, 255, 228], pygame.RLEACCEL)
+        surface.blit(img_surf, (0, 0))
 
-    def drawMain(self, surfaces):
-        for surf in surfaces:
-            self.surf_main.blit(self.surface[surf][0], self.surface[surf][1])
+        return surface
 
-    def drawSurface(self, nome, surf, pos):
-        self.surface[nome][0].blit(surf, pos)
+    def draw_screen(self):
+        self.screen.blit(self.main_surface, self.main_coordinate)
 
-    def addSurface(self, nome, pos, size, img=[], pos_img=(), text=[], pos_text=()):
-        self.surface[nome] = [pygame.Surface(size), pos]
-        self.tranparencia(self.surface[nome][0])
+    def draw_main(self, surfaces):
+        for name in surfaces:
+            self.main_surface.blit(self.surfaces[name][0], self.surfaces[name][1])
+
+    def draw_surface(self, name, surf, coordinate):
+        self.surfaces[name][0].blit(surf, coordinate)
+
+    def generate_surface(self, name, coordinate, size, img=[], coord_img=[]):
+        self.surfaces[name] = [pygame.Surface(size), coordinate]
+        self._transparency(self.surfaces[name][0])
         if img:
             for i in range(len(img)):
-                self.surface[nome][0].blit(
-                    pygame.image.load(img[i]), pos_img[i])
-        if text:
-            x, y = pos_text[0], pos_text[1]
-            for i in text:
-                i = self.font.render(i, True, (0, 0, 0))
-                self.surface[nome][0].blit(i, (x, y))
-                y += 20
+                self.surfaces[name][0].blit(
+                    pygame.image.load(img[i]), coord_img[i])
 
-    def setImage(self, nome, img, pos_img):
+    def load_image(self, name, img, coord_img):
         for i in range(len(img)):
-            self.surface[nome][0].blit(self.geraSurface(img[i]), pos_img[i])
+            self.surfaces[name][0].blit(self._generate_img_surface(img[i]), coord_img[i])
 
-    def setTextMenu(self, nome, text, pos_text):
-        x, y = pos_text[0], pos_text[1]
+    def text_menu_vert(self, name, text, coord_text):
+        x, y = coord_text[0], coord_text[1]
         for i in text:
             frase = self.font.render(i, True, (0, 0, 0))
-            self.surface[nome][0].blit(frase, (x, y))
+            self.surfaces[name][0].blit(frase, (x, y))
             y += self.font.size(i)[1] - 2
 
-    def setTextMenu(self, nome, text, pos_text):
-        x, y = pos_text[0], pos_text[1]
+    def text_menu_horiz(self, name, text, coord_text):
+        x, y = coord_text[0], coord_text[1]
         for i in text:
             frase = self.font.render(i, True, (0, 0, 0))
-            self.surface[nome][0].blit(frase, (x, y))
-            y += self.font.size(i)[1] - 2
-
-    def setMenuHoriz(self, nome, text, pos_text):
-        x, y = pos_text[0], pos_text[1]
-        for i in text:
-            frase = self.font.render(i, True, (0, 0, 0))
-            self.surface[nome][0].blit(frase, (x, y))
+            self.surfaces[name][0].blit(frase, (x, y))
             x += self.font.size(i)[0]
 
-    def geraSurface(self, img):
-        img = pygame.image.load(img)
-        surf = pygame.Surface(img.get_size())
-        surf.set_colorkey([0, 255, 228], pygame.RLEACCEL)
-        surf.blit(img, (0, 0))
-
-        return surf
-
-    def selectTabs(self, nome, tabs, select, pos, espaco, back):
-        x, y = pos
-        self.setImage(nome, [back], [(0, 0)])
-        separador = ' ' * (espaco // 2) + '/' + ' ' * (espaco // 2)
+    def select_menu_horiz(self, name, tabs, select, coordinate, space, back):
+        x, y = coordinate
+        self.load_image(name, [back], [(0, 0)])
+        separator = ' ' * (space // 2) + '/' + ' ' * (space // 2)
 
         for i in range(len(tabs)):
             if i == select:
@@ -87,55 +74,17 @@ class GUI():
                 self.font.set_underline(1)
 
             text = self.font.render(tabs[i], True, (0, 0, 0))
-            self.surface[nome][0].blit(text, (x, y))
+            self.surfaces[name][0].blit(text, (x, y))
             self.font.set_italic(0)
             self.font.set_underline(0)
             x += self.font.size(tabs[i])[0]
 
             if i != len(tabs) - 1:
-                text = self.font.render(separador, True, (0, 0, 0))
-                self.surface[nome][0].blit(text, (x, y))
-                x += self.font.size(separador)[0]
+                text = self.font.render(separator, True, (0, 0, 0))
+                self.surfaces[name][0].blit(text, (x, y))
+                x += self.font.size(separator)[0]
 
-    def selectVert(self, nome, select, back, img, pos, espaco):
-        x, y = pos
-        y = y + select * espaco
-        self.setImage(nome, [back, img], [(0, 0), (x, y)])
-
-
-    def selectVertical(self, nome, back, img, pos, maior, move):
-        select = 0
-        x, y = pos
-        cursor = self.geraSurface(img)
-        self.setImage(nome, [back, img], [(0, 0), (x, y)])
-        while True:
-            self.drawMain([nome])
-            self.drawScreen()
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        self.setImage(nome, [back], [(0, 0)])
-                        return select
-                    if event.key == pygame.K_w:
-                        y -= move
-                        select -= 1
-                        if y < pos[1]:
-                            y = pos[1]
-                            select = 0
-                        self.setImage(nome, [back], [(0, 0)])
-                        self.drawSurface(nome, cursor, (x, y))
-                    if event.key == pygame.K_s:
-                        y += move
-                        select += 1
-                        if y > pos[1] + maior * move:
-                            y = pos[1] + maior * move
-                            select = maior
-                        self.setImage(nome, [back], [(0, 0)])
-                        self.drawSurface(nome, cursor, (x, y))
-
-            pygame.display.update()
-            self.clock.tick(27)
+    def select_menu_vert(self, name, select, back, cursor, coordinate, space):
+        x, y = coordinate
+        y = y + select * space
+        self.image_load(name, [back, cursor], [(0, 0), (x, y)])

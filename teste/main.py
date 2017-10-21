@@ -1,22 +1,20 @@
-import sys, pygame
-pygame.init()
+import sys
+from io import BytesIO
+from subprocess import Popen
+import subprocess
+"""
+print PIPE
+buff = BytesIO()
+sys.stdout = buff
 
-screen = pygame.display.set_mode([800, 600])
+nome = raw_input('daniel: ')
 
-back = pygame.image.load("bg.jpg")
-black = pygame.image.load("black.png")
-surf = pygame.Surface([800, 600])
-surf.set_alpha(100)
+print 'fdsa'
 
-font = pygame.font.SysFont('OldLondon.ttf', 50)
-text = font.render('Hello, World!', True, (255, 255, 0))
-text.set_alpha(255)
-while 1:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: sys.exit()
+arq = open('arq.txt', 'w')
+arq.write(buff.getvalue())
+"""
 
-    screen.blit(back, (0, 0))
-    screen.blit(surf, (0, 0))
-    screen.blit(text, (0, 0))
+process = Popen('python teste.py', stdout=subprocess.PIPE, shell=True)
 
-    pygame.display.flip()
+print process.communicate()

@@ -3,6 +3,7 @@
 import pygame
 import math
 import sys
+import os
 from pygame.locals import*
 from constantes import *
 from control import control_feitico
@@ -104,8 +105,14 @@ def code_editor(screen, id_feitico):
             saveToDisk(mainList, path)
             break
         if newChar == 'test':
+            saveToDisk(mainList, path)
             control_feitico.verifica_feitico(id_feitico)
-
+        if newChar == 'run':
+            try:
+                os.system('idle-python2.7 -r %s' % path)
+            except:
+                pass
+                
         mainList, lineNumber, insertPoint, cursorRect = displayText(mainFont, newChar, typeChar, mainList, deleteKey, returnKey, lineNumber, insertPoint, directionKey, camerax, cameray, cursorRect, windowWidth, windowHeight, displaySurf, mouseClicked, mouseX, mouseY, screen)
 
         pygame.display.update()
@@ -381,6 +388,8 @@ def getInput(windowWidth, windowHeight, ctrlPress):
                 newChar = 'save_exit'
             elif event.key == K_f and ctrlPress:
                 newChar = 'test'
+            elif event.key == K_b and ctrlPress:
+                newChar = 'run'
             else:
                 newChar = event.unicode
                 typeChar = True
@@ -506,22 +515,6 @@ def getInsertPointAtMouseX(mouseX, mouseY, lineNumber, mainList, mainFont, camer
 
     else:
         return newInsertPoint
-
-
-def saveAndLoadScreen(mainList, windowWidth, windowHeight, displaySurf, mainFont, path, id_feitico):
-    saveFile = False
-
-    while True:
-        saveFile, continueTyping, exit = saveAndLoadInput(id_feitico)
-
-        if saveFile == True:
-            saveToDisk(mainList, path)
-            break     
-
-        elif continueTyping == True:
-            break    
-
-    return exit
 
 
 def saveToDisk(mainList, saveDirectory):

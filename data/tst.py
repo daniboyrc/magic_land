@@ -11,7 +11,6 @@ import re
 import sys
 import json
 import shlex
-import codecs
 import signal
 import string
 import unicodedata
@@ -20,7 +19,7 @@ from subprocess import Popen, PIPE
 
 TIMEOUT_DEFAULT = 2
 PYTHON = 'python2.7'
-if sys.version_info < (2,7):
+if sys.version_info < (2, 7):
     sys.stderr.write('tst.py: requires python 2.7 or later\n')
     sys.exit(1)
 
@@ -69,11 +68,8 @@ def to_unicode(obj, encoding='utf-8'):
 
 
 def read_tstjson(file, exit=False, quit_on_fail=False):
-    #with codecs.open(file, mode='r', encoding='utf-8') as f:
-    #    tstjson = json.loads(to_unicode(f.read()))
     with open(file) as fd:
         tstjson = json.load(fd)
-
 
     return tstjson
 
@@ -208,6 +204,7 @@ class TestRun:
                 # run subject as external process 
                 process_data = process.communicate(input=input_data)
                 stdout, stderr = map(to_unicode, process_data)
+
 
                 # collect output data
                 self.result['stdout'] = stdout # comment out to remove from report

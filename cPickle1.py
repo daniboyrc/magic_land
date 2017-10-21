@@ -122,3 +122,5 @@ fase1 = Fase(
 )
 
 cPickle.dump(fase1, file("resources/fases/cPickle1.dat", "w"))
+
+print cenario.size

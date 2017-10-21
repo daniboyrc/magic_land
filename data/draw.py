@@ -90,7 +90,7 @@ class Draw():
 
             self.player.sprite[1] = -96
             self.player.sprite[0] -= 32
-            if self.player.sprite[0] < -96:
+            if self.player.sprite[0] < -64:
                 self.player.sprite[0] = 0
         if move == 2:
             if center_height and Screen.height - cen.size[1] < cen.pos[1] + cen.mov[1] - speed:
@@ -100,7 +100,7 @@ class Draw():
 
             self.player.sprite[1] = 0
             self.player.sprite[0] -= 32
-            if self.player.sprite[0] < -96:
+            if self.player.sprite[0] < -64:
                 self.player.sprite[0] = 0
         if move == 3:
             if center_width and cen.pos[0] + cen.mov[0] + speed < 0:
@@ -110,7 +110,7 @@ class Draw():
 
             self.player.sprite[1] = -32
             self.player.sprite[0] -= 32
-            if self.player.sprite[0] < -96:
+            if self.player.sprite[0] < -64:
                 self.player.sprite[0] = 0
         if move == 4:
             if center_width and Screen.width - cen.size[0] < cen.pos[0] + cen.mov[0] - speed:
@@ -120,5 +120,61 @@ class Draw():
 
             self.player.sprite[1] = -64
             self.player.sprite[0] -= 32
-            if self.player.sprite[0] < -96:
+            if self.player.sprite[0] < -64:
+                self.player.sprite[0] = 0
+        if move == 5:
+            if center_width and cen.pos[0] + cen.mov[0] + speed < 0:
+                cen.mov[0] += speed
+            else:
+                self.player.mov[0] -= speed
+            if center_height and cen.pos[1] + cen.mov[1] + speed < 0:
+                cen.mov[1] += speed
+            else:
+                self.player.mov[1] -= speed
+
+            self.player.sprite[1] = -32
+            self.player.sprite[0] -= 32
+            if self.player.sprite[0] < -64:
+                self.player.sprite[0] = 0
+        if move == 6:
+            if center_width and cen.pos[0] + cen.mov[0] + speed < 0:
+                cen.mov[0] += speed
+            else:
+                self.player.mov[0] -= speed
+            if center_height and Screen.height - cen.size[1] < cen.pos[1] + cen.mov[1] - speed:
+                cen.mov[1] -= speed
+            else:
+                self.player.mov[1] += speed
+
+            self.player.sprite[1] = -32
+            self.player.sprite[0] -= 32
+            if self.player.sprite[0] < -64:
+                self.player.sprite[0] = 0
+        if move == 7:
+            if center_width and Screen.width - cen.size[0] < cen.pos[0] + cen.mov[0] - speed:
+                cen.mov[0] -= speed
+            else:
+                self.player.mov[0] += speed
+            if center_height and Screen.height - cen.size[1] < cen.pos[1] + cen.mov[1] - speed:
+                cen.mov[1] -= speed
+            else:
+                self.player.mov[1] += speed
+
+            self.player.sprite[1] = -64
+            self.player.sprite[0] -= 32
+            if self.player.sprite[0] < -64:
+                self.player.sprite[0] = 0
+        if move == 8:
+            if center_width and Screen.width - cen.size[0] < cen.pos[0] + cen.mov[0] - speed:
+                cen.mov[0] -= speed
+            else:
+                self.player.mov[0] += speed
+            if center_height and cen.pos[1] + cen.mov[1] + speed < 0:
+                cen.mov[1] += speed
+            else:
+                self.player.mov[1] -= speed
+
+            self.player.sprite[1] = -64
+            self.player.sprite[0] -= 32
+            if self.player.sprite[0] < -64:
                 self.player.sprite[0] = 0
